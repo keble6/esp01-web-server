@@ -31,14 +31,14 @@ if (WIFI_MODE == 1) {
     let result: boolean = wait_for_response("OK")
     if (!result) control.reset()
 } else if (WIFI_MODE == 2) {
-    // setup AP with 1 channels and authenticate mode = 4 (WPA_WPA2_PSK)
+    // setup AP with 4 channels and authenticate mode = 4 (WPA_WPA2_PSK)
     sendAT("AT+CWSAP=\"" + SSID_2 + "\",\"" + PASSWORD_2 + "\",1,4", 1000)
 }
 // allow multiple connections
 sendAT("AT+CIPMUX=1")
 //start web server
 sendAT("AT+CIPSERVER=1,80")
-// display IP (you will need this in STA mode; in AP mode it would be default 192.168.4.1)
+// display IP (you'll need this in STA mode; in AP mode it would be default 192.168.4.1)
 sendAT("AT+CIFSR")
 // startup completed
 basic.showIcon(IconNames.Yes)
@@ -69,7 +69,12 @@ while (true) {
                 break
         }
         // output HTML
-        let HTML_str: string = getHTML(GET_success)
+        let HTML_str: string = ""
+        if (GET_success) {
+            HTML_str = getHTML(true) // normal HTML
+        } else {
+            HTML_str = getHTML(false) // HTML with error message
+        }
         // send HTML to user
         sendAT("AT+CIPSEND=" + client_ID + "," + (HTML_str.length + 2))
         sendAT(HTML_str, 1000)
